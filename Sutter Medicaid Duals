@@ -1,0 +1,278 @@
+
+
+--- HOW MANY PATIENTS HAVE THEIR DUAL STATUS CHANGE OVER THE YEAR?
+
+SELECT no_changes, count(Distinct patient_id)
+FROM 
+(
+SELECT patient_id,
+--SUM
+(CASE 
+WHEN dual_stus_cd_01 = dual_stus_cd_02 
+AND dual_stus_cd_02 = dual_stus_cd_03
+AND dual_stus_cd_03 = dual_stus_cd_04 
+AND dual_stus_cd_04 = dual_stus_cd_05
+AND dual_stus_cd_05 = dual_stus_cd_06
+AND dual_stus_cd_06 = dual_stus_cd_07
+AND dual_stus_cd_07 = dual_stus_cd_08 
+AND dual_stus_cd_08 = dual_stus_cd_09 
+AND dual_stus_cd_09 = dual_stus_cd_10
+AND dual_stus_cd_10 = dual_stus_cd_11 
+AND dual_stus_cd_11 = dual_stus_cd_12 
+THEN 1 ELSE 0 END) AS no_changes
+FROM(
+SELECT sap.*,mbsf.year_nbr,mbsf.quarter_nbr,
+	mbsf.county_cd,
+	mbsf.esrd_ind,
+	mbsf.mdcr_status_code_01,
+	mbsf.mdcr_status_code_02,
+	mbsf.mdcr_status_code_03,
+	mbsf.mdcr_status_code_04,
+	mbsf.mdcr_status_code_05,
+	mbsf.mdcr_status_code_06,
+	mbsf.mdcr_status_code_07,
+	mbsf.mdcr_status_code_08,
+	mbsf.mdcr_status_code_09,
+	mbsf.mdcr_status_code_10,
+	mbsf.mdcr_status_code_11,
+	mbsf.mdcr_status_code_12,
+	mbsf.dual_stus_cd_01,
+	mbsf.dual_stus_cd_02,
+	mbsf.dual_stus_cd_03,
+	mbsf.dual_stus_cd_04,
+	mbsf.dual_stus_cd_05,
+	mbsf.dual_stus_cd_06,
+	mbsf.dual_stus_cd_07,
+	mbsf.dual_stus_cd_08,
+	mbsf.dual_stus_cd_09,
+	mbsf.dual_stus_cd_10,
+	mbsf.dual_stus_cd_11,mbsf.dual_stus_cd_12
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+) GROUP by 1;
+
+
+
+
+--- CREATE TABLE WITH ALL PATIENTS AND THEIR ELIGIBILITY, BY MONTH 
+
+DROP TABLE IF EXISTS public.sutter_aco_patients_eligibility; 
+
+CREATE TABLE public.sutter_aco_patients_eligibility AS (
+SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_01 as state_county,
+	mbsf.mdcr_status_code_01 as Medicare_status_code,
+	mbsf.dual_stus_cd_01 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4')
+UNION ALL 
+-- Month 2
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_02 as state_county,
+	mbsf.mdcr_status_code_02 as Medicare_status_code,
+	mbsf.dual_stus_cd_02 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+-- Month 3
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_03 as state_county,
+	mbsf.mdcr_status_code_03 as Medicare_status_code,
+	mbsf.dual_stus_cd_03 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+-- Month 4
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_04 as state_county,
+	mbsf.mdcr_status_code_04 as Medicare_status_code,
+	mbsf.dual_stus_cd_04 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL
+--Month 5 
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_05 as state_county,
+	mbsf.mdcr_status_code_05 as Medicare_status_code,
+	mbsf.dual_stus_cd_05 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+--Month 6 
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_06 as state_county,
+	mbsf.mdcr_status_code_06 as Medicare_status_code,
+	mbsf.dual_stus_cd_06 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+-- Month 7 
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_07 as state_county,
+	mbsf.mdcr_status_code_07 as Medicare_status_code,
+	mbsf.dual_stus_cd_07 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+-- Month 8 
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_08 as state_county,
+	mbsf.mdcr_status_code_08 as Medicare_status_code,
+	mbsf.dual_stus_cd_08 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+-- Month 9
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_09 as state_county,
+	mbsf.mdcr_status_code_09 as Medicare_status_code,
+	mbsf.dual_stus_cd_09 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+-- Month 10
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_10 as state_county,
+	mbsf.mdcr_status_code_10 as Medicare_status_code,
+	mbsf.dual_stus_cd_10 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+-- Month 11
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_11 as state_county,
+	mbsf.mdcr_status_code_11 as Medicare_status_code,
+	mbsf.dual_stus_cd_11 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4'))
+UNION ALL 
+-- Month 12 
+(SELECT sap.*,
+	mbsf.county_cd,state_cnty_fips_cd_12 as state_county,
+	mbsf.mdcr_status_code_12 as Medicare_status_code,
+	mbsf.dual_stus_cd_12 as Dual_status_Code
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN prod.raw_claims.qe_mbsf mbsf 
+on sap.patient_id = mbsf.bene_id_hash 
+WHERE year_nbr IN('2018') AND quarter_nbr IN('4')));
+
+
+--- GROUP AT THE COUNTY LEVEL 
+
+SELECT cbsa.fips_county_code,cbsa.county,count(distinct elig.patient_id) as n_total_patients, count(elig.*) as n_pt_months,
+SUM(CASE WHEN medicare_status_Code IN('10') THEN 1 ELSE 0 END) as Aged_Without_ESRD,
+SUM(CASE WHEN medicare_status_Code IN('11') THEN 1 ELSE 0 END) as Aged_With_ESRD,
+SUM(CASE WHEN medicare_status_Code IN('20') THEN 1 ELSE 0 END) as Disabled_Without_ESRD,
+SUM(CASE WHEN medicare_status_Code IN('21') THEN 1 ELSE 0 END) as Disabled_with_ESRD,
+SUM(CASE WHEN medicare_status_Code IN('31') THEN 1 ELSE 0 END) as ESRD_Only,
+SUM(CASE WHEN dual_status_code IN('NA') THEN 1 ELSE 0 END) as NA_NonMedicaid,
+SUM(CASE WHEN dual_status_code IN('00') THEN 1 ELSE 0 END) as OO_Not_Medicare_for_Month,
+SUM(CASE WHEN dual_status_code IN('01') THEN 1 ELSE 0 END) as O1_QMB_Only,
+SUM(CASE WHEN dual_status_code IN('02') THEN 1 ELSE 0 END) as O2_QMB_with_Medicaid,
+SUM(CASE WHEN dual_status_code IN('03') THEN 1 ELSE 0 END) as O3_SLMB_Only,
+SUM(CASE WHEN dual_status_code IN('04') THEN 1 ELSE 0 END) as O4_SLMB_with_Medicaid,
+SUM(CASE WHEN dual_status_code IN('05') THEN 1 ELSE 0 END) as O5_QDWI_Only,
+SUM(CASE WHEN dual_status_code IN('06') THEN 1 ELSE 0 END) as O6_Qualifying_Only,
+SUM(CASE WHEN dual_status_code IN('08') THEN 1 ELSE 0 END) as O8_Other_Full_Dual,
+SUM(CASE WHEN dual_status_code IN('09') THEN 1 ELSE 0 END) as O9_Other_Eligible_Without_Coverage,
+SUM(CASE WHEN dual_status_code IN('99') THEN 1 ELSE 0 END) as O99_Unknown_Dual
+FROM public.sutter_aco_patients_eligibility elig 
+INNER JOIN reference_data.census_cbsa_crosswalk cbsa
+ON substring(elig.state_county,1,2) = cbsa.fips_state_code 
+And substring(elig.state_county,3,3) =cbsa.fips_county_code 
+WHERE medicare_status_code NOT IN ('00')
+GROUP BY 1,2
+ORDER by 3 DESC;
+
+SELECT medicare_status_code,count(*)
+FROM public.sutter_aco_patients_eligibility elig 
+GROUP By 1;
+
+
+
+
+
+
+--INCORPORATE TOTAL COST 
+WITH sutter_total_cost AS (
+SELECT sap.patient_id, sum(ch.cms_standardized_allowed_amt) as total_PMPY
+FROM public.sutter_aco_patients_2018 sap 
+INNER JOIN claims.claim_header ch on sap.patient_id =ch.patient_id
+WHERE extract(YEAR FROM ch.claim_start_dt ) IN ('2018')
+GROUP by 1)
+SELECT county,
+CASE 
+WHEN Aged_Without_ESRD IN('1') THEN 'Aged_without_ESRD'
+WHEN Aged_with_ESRD IN('1') THEN 'Aged with ESRD'
+WHEN Disabled_with_ESRD IN('1') THEN 'Disabled_with_ESRD'
+when Disabled_Without_ESRD IN('1') THEN 'Disabled_Without_ESRD'
+WHEN ESRD_Only IN('1') THEN 'ESRD_Only' ELSE 'NULL' END as Medicare_Status,
+CASE 
+WHEN NA_NonMedicaid IN('1') THEN 'NA_NonMedicaid'
+WHEN OO_Not_Medicare_for_Month IN ('1') THEN 'OO_Not_Medicare_for_Month' 
+WHEN O1_QMB_Only IN('1') THEN 'O1_QMB_Only' 
+WHEN O2_QMB_with_Medicaid IN('1') THEN 'O2_QMB_with_Medicaid'
+WHEN O3_SLMB_Only IN('1') THEN 'O3_SLMB_Only'
+WHEN O4_SLMB_with_Medicaid IN('1') THEN 'O4_SLMB_with_Medicaid'
+WHEN O5_QDWI_Only IN('1') THEN 'O5_QDWI_Only'
+WHEN O6_Qualifying_Only IN('1') THEN 'O6_Qualifying_Only' 
+WHEN O8_Other_Full_Dual IN('1') THEN 'O8_Other_Full_Dual'
+WHEN O9_Other_Eligible_Without_Coverage IN('1') THEN 'O9_Other_Eligible_Without_Coverage'
+WHEN O99_Unknown_Dual IN('1') THEN 'O99_Unknown_Dual' 
+ELSE 'NULL' END as Dual_Status,count(distinct patient_id) as n_patients, count(*) as n_pt_months,
+avg(pmpm) as average_PMPM
+FROM (
+SELECT elig.patient_id, cbsa.county, cost.total_PMPY,1.0*cost.total_PMPY / count(*) OVER(partition by elig.patient_id) as PMPM,
+CASE WHEN medicare_status_Code IN('10') THEN 1 ELSE 0 END as Aged_Without_ESRD,
+CASE WHEN medicare_status_Code IN('11') THEN 1 ELSE 0 END as Aged_With_ESRD,
+CASE WHEN medicare_status_Code IN('20') THEN 1 ELSE 0 END as Disabled_Without_ESRD,
+CASE WHEN medicare_status_Code IN('21') THEN 1 ELSE 0 END as Disabled_with_ESRD,
+CASE WHEN medicare_status_Code IN('31') THEN 1 ELSE 0 END as ESRD_Only,
+CASE WHEN dual_status_code IN('NA') THEN 1 ELSE 0 END as NA_NonMedicaid,
+CASE WHEN dual_status_code IN('00') THEN 1 ELSE 0 END as OO_Not_Medicare_for_Month,
+CASE WHEN dual_status_code IN('01') THEN 1 ELSE 0 END as O1_QMB_Only,
+CASE WHEN dual_status_code IN('02') THEN 1 ELSE 0 END as O2_QMB_with_Medicaid,
+CASE WHEN dual_status_code IN('03') THEN 1 ELSE 0 END as O3_SLMB_Only,
+CASE WHEN dual_status_code IN('04') THEN 1 ELSE 0 END as O4_SLMB_with_Medicaid,
+CASE WHEN dual_status_code IN('05') THEN 1 ELSE 0 END as O5_QDWI_Only,
+CASE WHEN dual_status_code IN('06') THEN 1 ELSE 0 END as O6_Qualifying_Only,
+CASE WHEN dual_status_code IN('08') THEN 1 ELSE 0 END as O8_Other_Full_Dual,
+CASE WHEN dual_status_code IN('09') THEN 1 ELSE 0 END as O9_Other_Eligible_Without_Coverage,
+CASE WHEN dual_status_code IN('99') THEN 1 ELSE 0 END as O99_Unknown_Dual
+FROM public.sutter_aco_patients_eligibility elig 
+INNER JOIN reference_data.census_cbsa_crosswalk cbsa
+ON substring(elig.state_county,1,2) = cbsa.fips_state_code 
+And substring(elig.state_county,3,3) =cbsa.fips_county_code
+INNER JOIN sutter_total_cost cost on elig.patient_id = cost.patient_id
+WHERE medicare_status_code NOT IN('00'))
+GROUP by 1,2,3;
+
+
+
+
+--GROUP by elig.patient_id LIMIT 20;
+
